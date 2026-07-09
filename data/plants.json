@@ -1,0 +1,656 @@
+{
+  "_note": "Canonical plant records for the Sky Garden — written as personal notes. Irish (Gaeilge) names and folklore are drawn from Irish plant-lore sources and given only where they can be reasonably verified. The interactive tour (index.html) reads from a copy of these records, adds an original botanical illustration for each, and drives the harvest calendar from the harvest fields. Nothing here is medical advice — see docs/preparation-guide.md for the safety framing.",
+  "plants": [
+    {
+      "id": "crab-apple-dolgo",
+      "common": "Crab Apple 'Dolgo'",
+      "irish": "Crann Úll Fiáin",
+      "botanical": "Malus 'Dolgo'",
+      "type": "tree",
+      "position": {
+        "x_ft": 1.8,
+        "row": "wall"
+      },
+      "seasons": [
+        "spring",
+        "autumn",
+        "winter"
+      ],
+      "harvest": [
+        {
+          "m": [
+            4,
+            5
+          ],
+          "do": "Blossom → cordial"
+        },
+        {
+          "m": [
+            9,
+            10
+          ],
+          "do": "Fruit → jelly & syrup"
+        }
+      ],
+      "medicinal": "The small tart fruit is exceptionally high in pectin and vitamin C, and is astringent and mildly antibacterial. Traditionally the sharp fruit was valued as a gentle digestive, and its pectin-rich juice as a natural setting base for other fruit preparations.",
+      "preparing": "I cook the fruit into a pectin-rich jelly or syrup — it helps set my other, lower-pectin preparations — and infuse the blossom into a delicate cordial.",
+      "care": "I give it full sun and a large pot — a half-barrel or 40–60 L at least — and water steadily through summer. It's self-fertile and pollinates my other apples, and it's fully hardy here in Vancouver.",
+      "story": "The apple is one of the old fruit trees of the Irish and wider Celtic world, threaded through myth as the fruit of the Otherworld — the island of Emain Ablach and the Avalon whose name means 'place of apples'. A blossoming apple bough was a token of beauty and of the Otherworld.",
+      "wildlife": "Spring blossom for bees; autumn fruit for visiting birds.",
+      "safety": "No notable cautions; as with all apples, the seeds are best not eaten in quantity."
+    },
+    {
+      "id": "blackthorn",
+      "common": "Blackthorn (Sloe)",
+      "irish": "Draighean",
+      "botanical": "Prunus spinosa",
+      "type": "shrub",
+      "position": {
+        "x_ft": 5,
+        "row": "wall"
+      },
+      "seasons": [
+        "spring",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            3,
+            4
+          ],
+          "do": "Blossom → infuse"
+        },
+        {
+          "m": [
+            10,
+            11
+          ],
+          "do": "Sloes (after frost) → cordial & syrup"
+        }
+      ],
+      "medicinal": "The dark sloes are astringent — cooked into cordials and gargles for sore throats and taken as an autumn tonic; the blossom is gently cleansing. Best loved, of course, as sloe gin.",
+      "preparing": "I wait for the first frost — or give the sloes a night in the freezer — to soften them, then use them for cordial, syrup, or the classic sloe gin. I can infuse the blossom too.",
+      "care": "I keep it in full sun in a large pot and prune it hard to stay balcony-sized — it's extremely hardy and thorny. Its white blossom opens on bare black wood, very early in the year.",
+      "story": "Draighean, the blackthorn — the dark, protective counterpart to the hawthorn's light. Wood of the shillelagh and the walking-stick, it was guarded in lore by the lunantishee, fairies said to forbid its cutting at the old feasts. Its early white bloom on black wood names the cold snap of the 'blackthorn winter'.",
+      "wildlife": "Very early blossom for the first pollinators; dense thorns shelter nesting birds, the sloes feed them, and it is a host plant for many moths.",
+      "safety": "The stones (kernels) contain amygdalin — do not crush or eat them. The thorns can cause troublesome infections, so handle and prune with care."
+    },
+    {
+      "id": "hawthorn",
+      "common": "Hawthorn (Whitethorn)",
+      "irish": "Sceach Gheal",
+      "botanical": "Crataegus monogyna",
+      "type": "tree",
+      "position": {
+        "x_ft": 8,
+        "row": "wall"
+      },
+      "seasons": [
+        "spring",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            5
+          ],
+          "do": "Flower & leaf → tea"
+        },
+        {
+          "m": [
+            9,
+            10
+          ],
+          "do": "Berries → tincture & syrup"
+        }
+      ],
+      "medicinal": "One of the most respected heart tonics in Western herbalism. Flower, leaf, and berry are used to gently support the cardiovascular system and healthy blood pressure, with a mild calming quality.",
+      "preparing": "I infuse the dried flower-and-leaf as a tea in late spring, and make a berry tincture, syrup, or glycerite in autumn. Decoctions of flower and leaf were traditionally taken to steady blood pressure.",
+      "care": "I give it full sun to part shade in a large pot and prune it to stay balcony-sized — it's very hardy and forgiving.",
+      "story": "The lone hawthorn — sceach gheal, the 'bright thorn' — is the fairy tree of Ireland, and to harm a solitary bush was to risk the displeasure of the sídhe. Small gifts of food and drink were left beneath it, its young leaves were eaten as 'bread and cheese', and its blossom marked the turning of the year at Bealtaine. It is counted among the seven herbs of great power.",
+      "wildlife": "Blossom for pollinators; haws for birds through autumn.",
+      "safety": "Hawthorn is cardioactive. If you take heart or blood-pressure medication, treat it as active and consult a professional before use."
+    },
+    {
+      "id": "elder",
+      "common": "Elder",
+      "irish": "Trom",
+      "botanical": "Sambucus nigra",
+      "type": "shrub",
+      "position": {
+        "x_ft": 11,
+        "row": "wall"
+      },
+      "seasons": [
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            6
+          ],
+          "do": "Flowers → cordial"
+        },
+        {
+          "m": [
+            9
+          ],
+          "do": "Berries (cooked) → syrup & oxymel"
+        }
+      ],
+      "medicinal": "A cornerstone of Irish home medicine. The flowers are used for feverish colds and for the skin; the cooked berries for immune support through the winter months.",
+      "preparing": "I make elderflower cordial or infusion in early summer, and elderberry syrup or oxymel in autumn. I always cook the berries — never raw.",
+      "care": "I give it full sun to part shade and don't let it dry out; it's fast-growing, so I prune it hard — even coppice it — each year to fit a large container.",
+      "story": "The elder is the tree of the Elder Mother, respected and never cut without first asking her leave. It was thought an entrance to the faerie world and a tree of protection, and its bark was numbered among the seven herbs of great power in Irish tradition.",
+      "wildlife": "Flowers for pollinators; berries for birds.",
+      "safety": "Raw berries, and the leaves, bark, and stems, are toxic. Use flowers and cooked berries only."
+    },
+    {
+      "id": "rowan",
+      "common": "Rowan (Mountain Ash)",
+      "irish": "Caorthann",
+      "botanical": "Sorbus aucuparia",
+      "type": "tree",
+      "position": {
+        "x_ft": 14.4,
+        "row": "wall"
+      },
+      "seasons": [
+        "spring",
+        "autumn",
+        "winter"
+      ],
+      "harvest": [
+        {
+          "m": [
+            9,
+            10
+          ],
+          "do": "Berries (cooked) → jelly"
+        }
+      ],
+      "medicinal": "The bright berries are astringent and very high in vitamin C, traditionally cooked into a tart jelly taken for sore throats and as a winter tonic.",
+      "preparing": "I cook the berries into a jelly or syrup — they need cooking — and balance their sharpness against sweeter apples.",
+      "care": "I give it full sun in a large pot; it's hardy and slender, and happy in a container for its first several years.",
+      "story": "The rowan — caorthann — is the great tree of protection in Gaelic tradition, planted by the door to guard the home. Its wood and its red berries, each marked with a tiny five-pointed star, were charms against harm.",
+      "wildlife": "Blossom for pollinators; berries much loved by birds into winter.",
+      "safety": "Cook the berries before use."
+    },
+    {
+      "id": "foxglove",
+      "common": "Foxglove",
+      "irish": "Lus Mór",
+      "botanical": "Digitalis purpurea",
+      "type": "flower",
+      "position": {
+        "x_ft": 18,
+        "row": "wall"
+      },
+      "seasons": [
+        "summer"
+      ],
+      "harvest": [],
+      "noHarvest": true,
+      "medicinal": "Historically the source of the heart medicine digitalis — but foxglove is powerfully toxic and is not used in home medicine. It holds its place in this garden for its heritage and its pollinators, not for the still-room.",
+      "preparing": "I don't prepare or ingest any part. I grow it to honour the lore and feed the bees — to admire, never to harvest.",
+      "care": "I keep it in part shade to sun; it's a biennial that self-seeds happily in a pot. I wear gloves to handle it and wash my hands afterward.",
+      "story": "Lus mór, the 'great herb', and méaracán sí, the 'fairy thimble' — also 'fairy fingers' and lus na mban sí, 'plant of the fairy folk'. Among the most fairy-haunted of Irish plants, the spots inside its bells were said to be the fingermarks of the sídhe. It sits among the seven herbs of great power — respected precisely because it is dangerous.",
+      "wildlife": "Bumblebees adore the deep bells.",
+      "safety": "TOXIC in every part. Never ingest. Keep away from children and pets, wash hands after handling, and include it for heritage and pollinators only.",
+      "toxic": true
+    },
+    {
+      "id": "heather",
+      "common": "Heather (Ling)",
+      "irish": "Fraoch",
+      "botanical": "Calluna vulgaris",
+      "type": "shrub",
+      "position": {
+        "x_ft": 18.8,
+        "row": "rail"
+      },
+      "seasons": [
+        "summer",
+        "autumn",
+        "winter"
+      ],
+      "harvest": [
+        {
+          "m": [
+            8,
+            9
+          ],
+          "do": "Flowering tops → tea"
+        }
+      ],
+      "medicinal": "A mild urinary antiseptic and gently calming herb; the flowering tops make a pleasant, soothing tea. Historically brewed into heather ale.",
+      "preparing": "I infuse the dried flowering tops as a mild tea.",
+      "care": "I grow it in full sun in acidic, free-draining (ericaceous) mix. Evergreen and low, it gives my garden its winter structure and the latest flowers of the year.",
+      "story": "Fraoch clothes the hills of Ireland and Scotland — the plant of the open moor, of heather ale, and of home itself. Few plants say 'the old country' as directly.",
+      "wildlife": "Late-season nectar, valuable when little else is in bloom.",
+      "safety": "No notable cautions."
+    },
+    {
+      "id": "yarrow",
+      "common": "Yarrow",
+      "irish": "Lus na Fola",
+      "botanical": "Achillea millefolium",
+      "type": "herb",
+      "position": {
+        "x_ft": 2,
+        "row": "rail"
+      },
+      "seasons": [
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            6,
+            7,
+            8
+          ],
+          "do": "Flower & leaf → tea, oil, salve"
+        }
+      ],
+      "medicinal": "The classic wound herb — styptic (it helps staunch bleeding), anti-inflammatory, and diaphoretic, meaning a hot infusion encourages a sweat that can help break a fever.",
+      "preparing": "I press a fresh leaf to a small cut, brew the dried flower-and-leaf as a fever tea, or infuse it into oil for a salve.",
+      "care": "I give it full sun and sharp drainage; once established it's drought-tolerant — an easy, undemanding pot plant that flowers for a long season.",
+      "story": "Its Irish name, lus na fola, means 'herb of the blood', and old lore held yarrow the best of all herbs for cures — even sewn into clothing to keep illness away. Its botanical name honours Achilles, said to have carried it to staunch his soldiers' wounds.",
+      "wildlife": "Excellent for bees, butterflies, and hoverflies.",
+      "safety": "Best avoided in pregnancy; some people sensitive to the daisy family may react."
+    },
+    {
+      "id": "calendula",
+      "common": "Calendula (Pot Marigold)",
+      "irish": null,
+      "botanical": "Calendula officinalis",
+      "type": "flower",
+      "position": {
+        "x_ft": 4.2,
+        "row": "rail"
+      },
+      "seasons": [
+        "spring",
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "do": "Flowers → oil & salve"
+        }
+      ],
+      "medicinal": "The skin-healer of the herb garden — anti-inflammatory, gently antimicrobial, and soothing for minor cuts, chapping, and irritation. The foundation of a good home salve.",
+      "preparing": "I dry the petals and flowers, then infuse them into oil for salve, balm, or a simple wash. It's easy from seed and generous all season.",
+      "care": "I give it full sun and ordinary potting soil — the more I pick, the more it flowers.",
+      "story": "A beloved cottage-garden and monastery-garden herb across Ireland and Britain, long grown by the door for the pot and the medicine chest alike. Its name marks it as the 'little clock' that opens its face with the sun.",
+      "wildlife": "Reliable nectar for bees and hoverflies over a long season.",
+      "safety": "Daisy-family; rare sensitivity in susceptible people."
+    },
+    {
+      "id": "chamomile",
+      "common": "Chamomile",
+      "irish": null,
+      "botanical": "Chamaemelum nobile",
+      "type": "flower",
+      "position": {
+        "x_ft": 6.5,
+        "row": "rail"
+      },
+      "seasons": [
+        "summer"
+      ],
+      "harvest": [
+        {
+          "m": [
+            6,
+            7,
+            8
+          ],
+          "do": "Flowers → tea & wash"
+        }
+      ],
+      "medicinal": "The great calming and settling herb — soothing to the nerves and to the stomach, gentle enough for a bedtime tea, and, as a cooled infusion, a mild wash for irritated skin or tired eyes.",
+      "preparing": "I infuse the dried flowers as a tea; cooled and strained, the same infusion serves as a skin or eye wash.",
+      "care": "I give it full sun and light, free-draining soil. Roman chamomile makes a low, apple-scented mat for the front of a pot; German chamomile is a taller annual I grow from seed.",
+      "story": "An ancient herb of calm across Ireland and Britain — Celtic lore held that a cup of its tea gave 'the strength to persevere', and it joined mint and valerian in Lady Wilde's recorded May Day charm to call the bees to a hive. Gardeners knew it as 'the plant's physician', for ailing plants were said to revive when it grew near.",
+      "wildlife": "Open flowers for small bees and hoverflies.",
+      "safety": "Daisy family — rare sensitivity; avoid with a known ragweed or daisy allergy."
+    },
+    {
+      "id": "primrose",
+      "common": "Primrose",
+      "irish": "Sabhaircín",
+      "botanical": "Primula vulgaris",
+      "type": "flower",
+      "position": {
+        "x_ft": 8.7,
+        "row": "rail"
+      },
+      "seasons": [
+        "spring"
+      ],
+      "harvest": [
+        {
+          "m": [
+            3,
+            4
+          ],
+          "do": "Flowers & leaves → tea; edible"
+        }
+      ],
+      "medicinal": "A gentle old remedy — the flowers and leaves for coughs, headaches, and as a mild calmative; the root is more strongly expectorant. Soft in action, and among the first medicine of the year.",
+      "preparing": "I infuse the flowers or leaves as a mild tea. The flowers are edible too — lovely scattered on a salad or set into a cordial.",
+      "care": "I keep it in part shade in cool, moist soil — a woodland-edge plant, ideal for a shadier pot. Low and early, it pairs beautifully with my wild garlic.",
+      "story": "The primrose — sabhaircín — is a fairy flower of May Eve, strewn on the doorstep and window-sills to bless the home and keep the good folk kindly; where it grew, the sídhe were near. Its oil, with vervain, was named in the old tales among ingredients to bless a bard.",
+      "wildlife": "Among the very first nectar of spring, for early bees and brimstone butterflies.",
+      "safety": "Gentle; a few people find the leaves irritating to handle."
+    },
+    {
+      "id": "comfrey",
+      "common": "Comfrey",
+      "irish": "Lus na gCnámh Briste",
+      "botanical": "Symphytum officinale",
+      "type": "herb",
+      "position": {
+        "x_ft": 10.9,
+        "row": "rail"
+      },
+      "seasons": [
+        "spring",
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "do": "Leaf → salve & poultice (topical)"
+        }
+      ],
+      "medicinal": "'Knitbone' — the classic topical remedy for bruises, sprains, and slow-healing skin, rich in allantoin, which supports tissue repair.",
+      "preparing": "Topical only, for me. I infuse the leaf into oil for a salve, or make a poultice for bruises and sprains — modern guidance is not to take comfrey internally.",
+      "care": "I give it part sun and a large pot of its own — it's vigorous and generous, and its cut leaves feed my compost and other plants.",
+      "story": "Its Irish name, lus na gcnámh briste — 'herb of the broken bones' — records precisely what generations used it for: binding sprains and helping mend.",
+      "wildlife": "Bell flowers much loved by bumblebees.",
+      "safety": "External use only. Do not ingest, and keep it off broken skin and deep or dirty wounds."
+    },
+    {
+      "id": "st-johns-wort",
+      "common": "St John's Wort",
+      "irish": "Lus Cholm Cille",
+      "botanical": "Hypericum perforatum",
+      "type": "herb",
+      "position": {
+        "x_ft": 13.2,
+        "row": "rail"
+      },
+      "seasons": [
+        "summer"
+      ],
+      "harvest": [
+        {
+          "m": [
+            6,
+            7
+          ],
+          "do": "Flowering tops → red infused oil"
+        }
+      ],
+      "medicinal": "The golden midsummer flowers infuse into a deep-red oil prized for soothing minor burns, sore muscles, and nerve-related aches. Internally it carries a long and modern reputation for lifting low mood.",
+      "preparing": "I steep the fresh flowering tops in oil on a sunny sill until it turns red, for a topical oil or salve. I leave internal use to a professional's guidance.",
+      "care": "I give it full sun; it tolerates poor, dry soil and is easy in a pot.",
+      "story": "Gathered at midsummer, this was the plant of light against darkness, hung in the home for protection around St John's Eve. One Irish name, lus Cholm Cille, links it to St Colmcille, said to have carried it for comfort.",
+      "wildlife": "Flowers for pollinators.",
+      "safety": "Important: St John's Wort interacts with many medications — including antidepressants, the contraceptive pill, and others — and increases sensitivity to sunlight. Do not take it internally without checking with a pharmacist or doctor."
+    },
+    {
+      "id": "water-mint",
+      "common": "Water-mint",
+      "irish": "Cartlainn",
+      "botanical": "Mentha aquatica",
+      "type": "herb",
+      "position": {
+        "x_ft": 16,
+        "row": "rail"
+      },
+      "seasons": [
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "do": "Leaf → digestive tea"
+        }
+      ],
+      "medicinal": "Aromatic and digestive like its mint cousins — a warming carminative for the stomach, and traditionally taken for colds and coughs. Its Gaelic name traces to a word meaning 'to cleanse'.",
+      "preparing": "I infuse the fresh or dried leaf as a digestive tea.",
+      "care": "This is the one that most wants its feet wet, so I stand its pot in a saucer of water. I keep it contained, as all mints spread.",
+      "story": "The third of the three herbs the Druids held most sacred, beside meadowsweet and vervain. Its Gaelic names — cartlainn and its kin — come from cartam, 'to cleanse', and it was long used to cleanse the body and the water it grew beside.",
+      "wildlife": "Late flowers much loved by bees and butterflies.",
+      "safety": "Generally gentle; avoid large medicinal doses in pregnancy."
+    },
+    {
+      "id": "wild-garlic",
+      "common": "Wild Garlic (Ramsons)",
+      "irish": "Creamh",
+      "botanical": "Allium ursinum",
+      "type": "herb",
+      "position": {
+        "x_ft": 2,
+        "row": "mid"
+      },
+      "seasons": [
+        "spring"
+      ],
+      "harvest": [
+        {
+          "m": [
+            3,
+            4
+          ],
+          "do": "Leaves → pesto & greens"
+        },
+        {
+          "m": [
+            4,
+            5
+          ],
+          "do": "Flowers → garnish"
+        }
+      ],
+      "medicinal": "A spring food-medicine of the garlic family — supporting the heart and circulation, mildly antimicrobial, and eaten in quantity as a cleansing green after winter.",
+      "preparing": "I eat the fresh spring leaves in a pesto, soup, or butter — best used fresh, as the virtue fades on drying.",
+      "care": "This is my shade-lover — a cooler, shadier pot with moist soil. It appears in spring and dies back by summer, so I pair it with something that follows on.",
+      "story": "Creamh — the Irish word gathers garlic, leek, and their wild kin into one family of 'strong, strengthening plants'. It runs so deep in the land that it names places: creamh coille, 'wood garlic'. Each spring the woods of Ireland fill with its scent.",
+      "wildlife": "Early white star-flowers for the first pollinators.",
+      "safety": "Identify with care — never confuse the leaves with those of toxic look-alikes such as lily-of-the-valley or lords-and-ladies. The strong garlic scent of a crushed leaf is the test."
+    },
+    {
+      "id": "meadowsweet",
+      "common": "Meadowsweet",
+      "irish": "Airgead Luachra",
+      "botanical": "Filipendula ulmaria",
+      "type": "herb",
+      "position": {
+        "x_ft": 4.8,
+        "row": "mid"
+      },
+      "seasons": [
+        "summer"
+      ],
+      "harvest": [
+        {
+          "m": [
+            7,
+            8
+          ],
+          "do": "Flowering tops → tea"
+        }
+      ],
+      "medicinal": "A gentle anti-inflammatory and pain-reliever for aches and feverish colds and — unusually among salicylate herbs — soothing to the stomach. It gave its old botanical name, Spiraea, to the word 'aspirin'.",
+      "preparing": "I infuse the dried flowering tops as a tea; the flowers also sweeten mead and cordials.",
+      "care": "I give it full sun to part shade and keep the soil reliably moist — it likes to stay damp, so I use a larger pot or stand it in a saucer of water in summer.",
+      "story": "Meadowsweet — airgead luachra, 'silver of the rushes' — is one of the three herbs held most sacred by the Druids, alongside vervain and water-mint. It was strewn on floors for its sweet, almond-like scent at festivals and is associated with Bealtaine.",
+      "wildlife": "Flowers for pollinators.",
+      "safety": "Contains salicylates — avoid if you are sensitive to aspirin."
+    },
+    {
+      "id": "vervain",
+      "common": "Vervain",
+      "irish": null,
+      "botanical": "Verbena officinalis",
+      "type": "herb",
+      "position": {
+        "x_ft": 7.6,
+        "row": "mid"
+      },
+      "seasons": [
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            7,
+            8,
+            9
+          ],
+          "do": "Flowering tops → tea & tincture"
+        }
+      ],
+      "medicinal": "A classic nervine — calming to a tense, frayed nervous system and traditionally taken for stress, tension headaches, and low spirits, with a bitter edge that supports digestion.",
+      "preparing": "I infuse the dried flowering tops as a tea — it's markedly bitter, so I usually blend it — or take it as a tincture.",
+      "care": "I give it full sun and free-draining soil; it's tall, airy, and wiry, so its fine lilac spikes take up little room in a pot despite their height.",
+      "story": "Vervain is the Enchanter's Herb, named by Pliny among the plants most favoured by the Druids and laid on their altars as an offering — a herb of purification, protection, and blessing across the Celtic and classical worlds. With meadowsweet and water-mint, it completes the three the Druids held most sacred.",
+      "wildlife": "Small flowers for bees and hoverflies.",
+      "safety": "Best avoided in pregnancy."
+    },
+    {
+      "id": "valerian",
+      "common": "Valerian",
+      "irish": null,
+      "botanical": "Valeriana officinalis",
+      "type": "herb",
+      "position": {
+        "x_ft": 10.4,
+        "row": "mid"
+      },
+      "seasons": [
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            6
+          ],
+          "do": "Flowers → scent for the bees"
+        },
+        {
+          "m": [
+            9,
+            10
+          ],
+          "do": "Root → tincture & tea"
+        }
+      ],
+      "medicinal": "One of the oldest calming herbs of Europe — the root is a gentle sedative and nervine, taken for restlessness, anxiousness, and to ease the way into sleep.",
+      "preparing": "The root is the medicine: I lift it in autumn from an established plant, clean and dry it, and take it as a tea or tincture. Its scent is famously strong and earthy — not to everyone's liking.",
+      "care": "I give it sun to part shade and moist, rich soil in a large, deep pot. It grows tall, with sweetly scented pale flower-heads — and the neighbourhood cats are drawn to it.",
+      "story": "An ancient herb of peace, prized for calm across the old European herbals and among the plants the Druids would have known. It joined mint and chamomile in Lady Wilde's recorded May Day charm to gather bees, and folk memory ties its root-scent to the Pied Piper's power over rats.",
+      "wildlife": "Sweetly scented flower-heads for bees and moths.",
+      "safety": "A sedative — do not combine with sedative medication or alcohol, avoid it before driving, and avoid it in pregnancy."
+    },
+    {
+      "id": "nettle",
+      "common": "Nettle",
+      "irish": "Neantóg",
+      "botanical": "Urtica dioica",
+      "type": "herb",
+      "position": {
+        "x_ft": 13.4,
+        "row": "mid"
+      },
+      "seasons": [
+        "spring"
+      ],
+      "harvest": [
+        {
+          "m": [
+            3,
+            4
+          ],
+          "do": "Young tops → soup & tea"
+        },
+        {
+          "m": [
+            9
+          ],
+          "do": "Second-flush tops → tea"
+        }
+      ],
+      "medicinal": "One of the great spring tonics — deeply nourishing and mineral-rich (iron, calcium), traditionally taken to 'clean the blood' after winter and valued for joint complaints.",
+      "preparing": "I cook or dry the young spring tops — cooking takes out the sting — for soup, or infuse the dried leaf as a mineral-rich tea. I harvest with gloves.",
+      "care": "I keep it in part sun in its own contained pot, as it spreads readily, and cut it back for a fresh flush.",
+      "story": "'Fire lights fire': the sting of the nettle was itself used against the burning pain of rheumatism. Nettle soup is an enduring Irish spring dish, eaten to carry the body from winter into the new season.",
+      "wildlife": "A host plant for the caterpillars of several butterflies, including the small tortoiseshell and peacock.",
+      "safety": "Wear gloves to harvest; always cook or dry before eating."
+    },
+    {
+      "id": "lemon-balm",
+      "common": "Lemon Balm",
+      "irish": null,
+      "botanical": "Melissa officinalis",
+      "type": "herb",
+      "position": {
+        "x_ft": 16.6,
+        "row": "mid"
+      },
+      "seasons": [
+        "spring",
+        "summer",
+        "autumn"
+      ],
+      "harvest": [
+        {
+          "m": [
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "do": "Leaf → calming tea"
+        }
+      ],
+      "medicinal": "A gentle, gladdening nervine — calming for anxiousness and restlessness, settling to the stomach, and, used topically, valued against cold-sore outbreaks. An old herb for lifting the spirits.",
+      "preparing": "I infuse the fresh or dried leaf as a calming tea; a strong infusion also makes a soothing skin wash.",
+      "care": "I grow it in a pot in sun or part shade — easy and generous — cut it back to keep it fresh, and keep it contained, as it self-seeds.",
+      "story": "Its name Melissa is Greek for honeybee: for centuries it was grown beside the hives and rubbed on them to keep the bees content and draw a swarm home. It was long counted a herb of gladness — said to 'make the heart merry'.",
+      "wildlife": "A magnet for honeybees and bumblebees, as its name promises.",
+      "safety": "Gentle; those with a thyroid condition may wish to check with a professional before regular medicinal use."
+    }
+  ]
+}
