@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sky Garden — an interactive tour</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+  :root{
+    --bg:#ffffff; --ink:#5d5a5b; --accent:#a29f9f;
+    --panel:#f6f5f5; --panel-2:#efeeee; --line:#e5e3e3; --line-strong:#d8d5d5;
+    --muted:#837f80; --accent-deep:#83807f; --ink-soft:#6f6c6d;
+    --maxw:1120px; --radius:4px;
+    font-family:'Asap',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  [hidden]{display:none !important}
+
+  header.site{padding:56px 0 8px}
+  .eyebrow{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 14px}
+  h1.title{font-size:clamp(40px,7vw,72px);line-height:.98;margin:0;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+  .gaelic{margin:14px 0 0;color:var(--muted);font-size:15px;font-style:italic;letter-spacing:.01em}
+  .lede{margin:22px 0 0;max-width:62ch;color:var(--ink-soft);font-size:17px}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .viewtabs{display:inline-flex;margin:34px 0 0;border:1px solid var(--line-strong);border-radius:999px;padding:3px;background:var(--bg)}
+  .viewtab{font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--ink-soft);background:transparent;border:0;border-radius:999px;padding:8px 18px;cursor:pointer;transition:all .18s ease}
+  .viewtab[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .viewtab:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin:18px 0 18px;padding-top:22px;border-top:1px solid var(--line)}
+  .seasons{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--ink-soft);background:var(--bg);border:1px solid var(--line-strong);border-radius:999px;padding:8px 16px;cursor:pointer;transition:all .18s ease}
+  .chip:hover{border-color:var(--accent);color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .legend{margin-left:auto;display:flex;gap:16px;align-items:center;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+  .legend .lg{display:inline-flex;align-items:center;gap:7px}
+  .legend .dot{border-radius:50%;background:var(--panel-2);border:1.5px solid var(--accent)}
+  .legend .dot.tree{width:16px;height:16px}.legend .dot.shrub{width:12px;height:12px}.legend .dot.herb{width:9px;height:9px}
+
+  .plan-shell{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--panel) 0%,#fff 60%);padding:10px 6px 4px;overflow-x:auto;overflow-y:hidden}
+  svg#deck{display:block;width:100%;min-width:1000px;height:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin:10px 2px 0;letter-spacing:.02em}
+
+  .deck-floor{fill:#fbfafa;stroke:var(--line-strong);stroke-width:1.5}
+  .wall{fill:none;stroke:var(--line-strong);stroke-width:2.5}
+  .rail{fill:none;stroke:var(--accent);stroke-width:1.5}
+  .baluster{stroke:var(--line-strong);stroke-width:1}
+  .tick{stroke:var(--line-strong);stroke-width:1}
+  .tick-label{fill:var(--muted);font-size:12px;font-family:inherit}
+  .edge-label{fill:var(--accent);font-size:11px;font-family:inherit;letter-spacing:.18em;text-transform:uppercase}
+  .marker{cursor:pointer;transition:opacity .25s ease}
+  .marker .disc{fill:var(--panel-2);stroke:var(--accent);stroke-width:2;transition:fill .2s ease, stroke .2s ease}
+  .marker .m-label{fill:var(--ink-soft);font-size:12.5px;font-family:inherit;font-weight:500;text-anchor:middle;transition:fill .2s ease}
+  .marker:hover .disc{fill:#fff;stroke:var(--accent-deep)}
+  .marker:hover .m-label{fill:var(--ink)}
+  .marker:focus-visible .disc{stroke:var(--ink);stroke-width:3}
+  .marker.selected .disc{fill:var(--ink);stroke:var(--ink)}
+  .marker.selected .m-label{fill:var(--ink);font-weight:600}
+  .marker.dimmed{opacity:.26;pointer-events:none}
+  .marker .m-initial{fill:var(--accent-deep);font-size:13px;font-weight:700;font-family:inherit;text-anchor:middle;dominant-baseline:central;pointer-events:none;transition:fill .2s ease}
+  .marker.selected .m-initial{fill:#fff}
+  @media (prefers-reduced-motion: no-preference){
+    .marker-inner{opacity:0;animation:rise .5s ease forwards}
+    @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  }
+
+  /* Calendar */
+  .cal-now-box{margin:18px 0 16px;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+  .cal-now-box .eyebrow{margin:0 0 6px}
+  .cal-now-box p.txt{margin:0;color:var(--ink);font-size:15.5px;max-width:70ch}
+  .cal-shell{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:4px 2px;overflow-x:auto}
+  table.cal{border-collapse:collapse;width:100%;min-width:880px;font-size:13px}
+  .cal th,.cal td{padding:7px 3px;text-align:center;border-bottom:1px solid var(--line)}
+  .cal thead th{font-weight:600;color:var(--muted);font-size:11px;letter-spacing:.06em}
+  .cal th.rowname{text-align:left;padding-left:12px}
+  .cal .rowname{text-align:left;white-space:nowrap;color:var(--ink);cursor:pointer;font-weight:500;padding-left:12px}
+  .cal tbody tr{cursor:pointer;transition:background .15s ease}
+  .cal tbody tr:hover{background:var(--panel)}
+  .cal td.cell{width:6%}
+  .cal td.cell .b{display:block;height:15px;border-radius:3px;background:transparent;margin:0 2px}
+  .cal td.cell.on .b{background:var(--accent)}
+  .cal td.cell.sel{background:rgba(131,128,127,.10)}
+  .cal td.cell.on.sel .b{background:var(--accent-deep)}
+  .cal thead th.mhead{cursor:pointer;user-select:none;position:relative;border-radius:4px 4px 0 0;transition:background .15s ease,color .15s ease}
+  .cal thead th.mhead:hover{background:var(--panel-2);color:var(--ink)}
+  .cal thead th.mhead:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+  .cal thead th.mhead.sel{background:var(--ink);color:#fff}
+  .cal thead th.mhead.is-now::after{content:"";position:absolute;left:50%;bottom:3px;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent-deep)}
+  .cal thead th.mhead.sel.is-now::after{background:#fff}
+  .cal-key{display:flex;gap:18px;align-items:center;margin:10px 2px 0;color:var(--muted);font-size:12px}
+  .cal-key i{display:inline-block;width:16px;height:10px;border-radius:2px;vertical-align:middle;margin-right:6px}
+
+  .scrim{position:fixed;inset:0;background:rgba(93,90,91,.28);opacity:0;visibility:hidden;transition:opacity .25s ease;z-index:20}
+  .scrim.open{opacity:1;visibility:visible}
+  .panel{position:fixed;top:0;right:0;height:100%;width:min(460px,100%);background:var(--bg);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .3s cubic-bezier(.22,.61,.36,1);z-index:21;display:flex;flex-direction:column}
+  .panel.open{transform:translateX(0)}
+  .plate{flex:none;height:150px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .plate svg{height:124px;width:auto}
+  .plate-photo{height:100%;width:100%;object-fit:cover;display:block}
+  .panel-head{flex:none;padding:20px 26px 18px;border-bottom:1px solid var(--line);position:relative}
+  .panel-kicker{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 8px}
+  .panel-title{font-size:26px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .panel-irish{margin:6px 0 0;color:var(--ink);font-style:italic;font-size:15px}
+  .panel-bot{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .panel-close{position:absolute;top:-134px;right:20px;width:34px;height:34px;border:1px solid var(--line-strong);background:#fff;border-radius:50%;cursor:pointer;color:var(--ink);font-size:18px;line-height:1;display:grid;place-items:center;transition:all .18s ease;z-index:2}
+  .panel-close:hover{background:var(--panel-2);border-color:var(--accent)}
+  .panel-close:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .panel-body{flex:1;padding:6px 26px 40px;overflow-y:auto}
+  .seasontags{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 4px}
+  .seasontag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--ink-soft);background:var(--panel);border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+  .field{margin:22px 0 0}
+  .field h3{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 6px}
+  .field p{margin:0;color:var(--ink);font-size:15px}
+  .field.harvest p b{color:var(--ink-soft);font-weight:600}
+  .field.safety{margin-top:24px;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+  .field.safety h3{color:var(--ink-soft)}
+  .field.safety.toxic{border-color:var(--accent-deep)}
+  .field.safety.toxic h3{color:var(--accent-deep)}
+
+  footer.site{margin:56px 0 72px;padding-top:26px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;max-width:72ch}
+  footer.site p{margin:0 0 10px}
+  footer.site b{color:var(--ink-soft);font-weight:600}
+  @media (max-width:560px){header.site{padding-top:40px}.legend{margin-left:0;width:100%}.panel{width:100%}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <p class="eyebrow">Sky Garden · Vancouver, BC</p>
+      <h1 class="title">A garden in the sky</h1>
+      <p class="gaelic">Spéirghairdín — from <i>spéir</i>, sky, and <i>gairdín</i>, garden</p>
+      <p class="lede">My balcony — <b>twenty feet by five</b>, grown entirely in pots and tended season by season. I've gathered these plants to carry a thread of my Irish and wider Celtic heritage into a Vancouver sky: for gentle medicine, for the birds and bees who visit, and for the quiet work of making a home far from home. I explore the <b>garden plan</b> to meet each plant, and the <b>harvest calendar</b> to see what to gather and make through the year.</p>
+    </header>
+
+    <div class="viewtabs" role="group" aria-label="Choose a view">
+      <button class="viewtab" data-view="plan" aria-pressed="true">Garden plan</button>
+      <button class="viewtab" data-view="calendar" aria-pressed="false">Harvest calendar</button>
+    </div>
+
+    <!-- PLAN VIEW -->
+    <div class="controls" id="planControls">
+      <div class="seasons" role="group" aria-label="Filter plants by season">
+        <button class="chip" data-season="all" aria-pressed="true">All year</button>
+        <button class="chip" data-season="spring" aria-pressed="false">Spring</button>
+        <button class="chip" data-season="summer" aria-pressed="false">Summer</button>
+        <button class="chip" data-season="autumn" aria-pressed="false">Autumn</button>
+        <button class="chip" data-season="winter" aria-pressed="false">Winter</button>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span class="lg"><span class="dot tree"></span>Tree</span>
+        <span class="lg"><span class="dot shrub"></span>Shrub</span>
+        <span class="lg"><span class="dot herb"></span>Herb &amp; flower</span>
+      </div>
+    </div>
+    <div class="plan-shell" id="planShell">
+      <svg id="deck" viewBox="0 0 1120 420" role="img" aria-label="Plan view of a 20-foot by 5-foot balcony with plant positions"></svg>
+    </div>
+    <p class="caption" id="planCaption">My balcony, drawn to scale — the wall along the back, the railing and the view along the front. I tap or click any plant to open its notes (or Tab to it and press Enter).</p>
+
+    <!-- CALENDAR VIEW -->
+    <div class="cal-wrap" id="calWrap" hidden>
+      <div class="cal-now-box">
+        <p class="eyebrow" id="calMonthLabel">—</p>
+        <p class="txt" id="calNowText">—</p>
+      </div>
+      <div class="cal-shell">
+        <table class="cal" id="calTable"></table>
+      </div>
+      <div class="cal-key" aria-hidden="true">
+        <span><i style="background:var(--accent)"></i>In season</span>
+        <span><i style="background:var(--accent-deep)"></i>Selected month</span>
+        <span><i style="background:var(--accent-deep);width:6px;height:6px;border-radius:50%"></i>Today's month</span>
+        <span>Click a month, or a plant for its record</span>
+      </div>
+      <p class="caption">I click any month to see what's ready then — the dotted month is today's, and arrow keys step through them. A rough guide for a mild coastal climate; I tap a plant for the detail. Foxglove is grown for lore and pollinators only, so it carries no harvest.</p>
+    </div>
+
+    <footer class="site">
+      <p><b>A note to myself on safety.</b> These are traditional and herbal uses I've gathered for interest and heritage — not medical advice. I identify carefully, I remember that several of these plants have real cautions or interactions, and that foxglove is here for lore and the bees only and must never be taken. Before I prepare anything for myself or a guest, I cross-check a trusted herbal reference or a qualified practitioner, and I patch-test any topical first.</p>
+      <p><b>A note to myself on heritage.</b> I've drawn the Irish (Gaeilge) names and folklore from Irish plant-lore sources, and kept them only where I could reasonably verify them; where I haven't yet found a confident name, I've left it open. This is a living record — I'll correct and add to it as my garden and my knowledge grow.</p>
+    </footer>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle" aria-hidden="true">
+    <div class="plate" id="panelPlate" aria-hidden="true"></div>
+    <div class="panel-head">
+      <button class="panel-close" id="panelClose" aria-label="Close plant details">×</button>
+      <p class="panel-kicker" id="panelKicker">Plant</p>
+      <h2 class="panel-title" id="panelTitle">—</h2>
+      <p class="panel-irish" id="panelIrish"></p>
+      <p class="panel-bot" id="panelBot"></p>
+    </div>
+    <div class="panel-body" id="panelBody"></div>
+  </aside>
+
+<script>
+/* ============================ PLANT DATA ============================ */
+const PLANTS = [
+  {"id":"crab-apple-dolgo","common":"Crab Apple 'Dolgo'","irish":"Crann Úll Fiáin","botanical":"Malus 'Dolgo'","type":"tree","position":{"x_ft":1.8,"row":"wall"},"seasons":["spring","autumn","winter"],
+   "harvest":[{"m":[4,5],"do":"Blossom → cordial"},{"m":[9,10],"do":"Fruit → jelly & syrup"}],
+   "medicinal":"The small tart fruit is exceptionally high in pectin and vitamin C, and is astringent and mildly antibacterial. Traditionally the sharp fruit was valued as a gentle digestive, and its pectin-rich juice as a natural setting base for other fruit preparations.",
+   "preparing":"I cook the fruit into a pectin-rich jelly or syrup — it helps set my other, lower-pectin preparations — and infuse the blossom into a delicate cordial.",
+   "care":"I give it full sun and a large pot — a half-barrel or 40–60 L at least — and water steadily through summer. It's self-fertile and pollinates my other apples, and it's fully hardy here in Vancouver.",
+   "story":"The apple is one of the old fruit trees of the Irish and wider Celtic world, threaded through myth as the fruit of the Otherworld — the island of Emain Ablach and the Avalon whose name means 'place of apples'. A blossoming apple bough was a token of beauty and of the Otherworld.",
+   "wildlife":"Spring blossom for bees; autumn fruit for visiting birds.",
+   "safety":"No notable cautions; as with all apples, the seeds are best not eaten in quantity."},
+  {"id":"blackthorn","common":"Blackthorn (Sloe)","irish":"Draighean","botanical":"Prunus spinosa","type":"shrub","position":{"x_ft":5,"row":"wall"},"seasons":["spring","autumn"],
+   "harvest":[{"m":[3,4],"do":"Blossom → infuse"},{"m":[10,11],"do":"Sloes (after frost) → cordial & syrup"}],
+   "medicinal":"The dark sloes are astringent — cooked into cordials and gargles for sore throats and taken as an autumn tonic; the blossom is gently cleansing. Best loved, of course, as sloe gin.",
+   "preparing":"I wait for the first frost — or give the sloes a night in the freezer — to soften them, then use them for cordial, syrup, or the classic sloe gin. I can infuse the blossom too.",
+   "care":"I keep it in full sun in a large pot and prune it hard to stay balcony-sized — it's extremely hardy and thorny. Its white blossom opens on bare black wood, very early in the year.",
+   "story":"Draighean, the blackthorn — the dark, protective counterpart to the hawthorn's light. Wood of the shillelagh and the walking-stick, it was guarded in lore by the lunantishee, fairies said to forbid its cutting at the old feasts. Its early white bloom on black wood names the cold snap of the 'blackthorn winter'.",
+   "wildlife":"Very early blossom for the first pollinators; dense thorns shelter nesting birds, the sloes feed them, and it is a host plant for many moths.",
+   "safety":"The stones (kernels) contain amygdalin — do not crush or eat them. The thorns can cause troublesome infections, so handle and prune with care."},
+  {"id":"hawthorn","common":"Hawthorn (Whitethorn)","irish":"Sceach Gheal","botanical":"Crataegus monogyna","type":"tree","position":{"x_ft":8,"row":"wall"},"seasons":["spring","autumn"],
+   "harvest":[{"m":[5],"do":"Flower & leaf → tea"},{"m":[9,10],"do":"Berries → tincture & syrup"}],
+   "medicinal":"One of the most respected heart tonics in Western herbalism. Flower, leaf, and berry are used to gently support the cardiovascular system and healthy blood pressure, with a mild calming quality.",
+   "preparing":"I infuse the dried flower-and-leaf as a tea in late spring, and make a berry tincture, syrup, or glycerite in autumn. Decoctions of flower and leaf were traditionally taken to steady blood pressure.",
+   "care":"I give it full sun to part shade in a large pot and prune it to stay balcony-sized — it's very hardy and forgiving.",
+   "story":"The lone hawthorn — sceach gheal, the 'bright thorn' — is the fairy tree of Ireland, and to harm a solitary bush was to risk the displeasure of the sídhe. Small gifts of food and drink were left beneath it, its young leaves were eaten as 'bread and cheese', and its blossom marked the turning of the year at Bealtaine. It is counted among the seven herbs of great power.",
+   "wildlife":"Blossom for pollinators; haws for birds through autumn.",
+   "safety":"Hawthorn is cardioactive. If you take heart or blood-pressure medication, treat it as active and consult a professional before use."},
+  {"id":"elder","common":"Elder","irish":"Trom","botanical":"Sambucus nigra","type":"shrub","position":{"x_ft":11,"row":"wall"},"seasons":["summer","autumn"],
+   "harvest":[{"m":[6],"do":"Flowers → cordial"},{"m":[9],"do":"Berries (cooked) → syrup & oxymel"}],
+   "medicinal":"A cornerstone of Irish home medicine. The flowers are used for feverish colds and for the skin; the cooked berries for immune support through the winter months.",
+   "preparing":"I make elderflower cordial or infusion in early summer, and elderberry syrup or oxymel in autumn. I always cook the berries — never raw.",
+   "care":"I give it full sun to part shade and don't let it dry out; it's fast-growing, so I prune it hard — even coppice it — each year to fit a large container.",
+   "story":"The elder is the tree of the Elder Mother, respected and never cut without first asking her leave. It was thought an entrance to the faerie world and a tree of protection, and its bark was numbered among the seven herbs of great power in Irish tradition.",
+   "wildlife":"Flowers for pollinators; berries for birds.",
+   "safety":"Raw berries, and the leaves, bark, and stems, are toxic. Use flowers and cooked berries only."},
+  {"id":"rowan","common":"Rowan (Mountain Ash)","irish":"Caorthann","botanical":"Sorbus aucuparia","type":"tree","position":{"x_ft":14.4,"row":"wall"},"seasons":["spring","autumn","winter"],
+   "harvest":[{"m":[9,10],"do":"Berries (cooked) → jelly"}],
+   "medicinal":"The bright berries are astringent and very high in vitamin C, traditionally cooked into a tart jelly taken for sore throats and as a winter tonic.",
+   "preparing":"I cook the berries into a jelly or syrup — they need cooking — and balance their sharpness against sweeter apples.",
+   "care":"I give it full sun in a large pot; it's hardy and slender, and happy in a container for its first several years.",
+   "story":"The rowan — caorthann — is the great tree of protection in Gaelic tradition, planted by the door to guard the home. Its wood and its red berries, each marked with a tiny five-pointed star, were charms against harm.",
+   "wildlife":"Blossom for pollinators; berries much loved by birds into winter.",
+   "safety":"Cook the berries before use."},
+  {"id":"foxglove","common":"Foxglove","irish":"Lus Mór","botanical":"Digitalis purpurea","type":"flower","position":{"x_ft":18,"row":"wall"},"seasons":["summer"],
+   "harvest":[],"noHarvest":true,
+   "medicinal":"Historically the source of the heart medicine digitalis — but foxglove is powerfully toxic and is not used in home medicine. It holds its place in this garden for its heritage and its pollinators, not for the still-room.",
+   "preparing":"I don't prepare or ingest any part. I grow it to honour the lore and feed the bees — to admire, never to harvest.",
+   "care":"I keep it in part shade to sun; it's a biennial that self-seeds happily in a pot. I wear gloves to handle it and wash my hands afterward.",
+   "story":"Lus mór, the 'great herb', and méaracán sí, the 'fairy thimble' — also 'fairy fingers' and lus na mban sí, 'plant of the fairy folk'. Among the most fairy-haunted of Irish plants, the spots inside its bells were said to be the fingermarks of the sídhe. It sits among the seven herbs of great power — respected precisely because it is dangerous.",
+   "wildlife":"Bumblebees adore the deep bells.",
+   "safety":"TOXIC in every part. Never ingest. Keep away from children and pets, wash hands after handling, and include it for heritage and pollinators only.","toxic":true},
+  {"id":"heather","common":"Heather (Ling)","irish":"Fraoch","botanical":"Calluna vulgaris","type":"shrub","position":{"x_ft":18.8,"row":"rail"},"seasons":["summer","autumn","winter"],
+   "harvest":[{"m":[8,9],"do":"Flowering tops → tea"}],
+   "medicinal":"A mild urinary antiseptic and gently calming herb; the flowering tops make a pleasant, soothing tea. Historically brewed into heather ale.",
+   "preparing":"I infuse the dried flowering tops as a mild tea.",
+   "care":"I grow it in full sun in acidic, free-draining (ericaceous) mix. Evergreen and low, it gives my garden its winter structure and the latest flowers of the year.",
+   "story":"Fraoch clothes the hills of Ireland and Scotland — the plant of the open moor, of heather ale, and of home itself. Few plants say 'the old country' as directly.",
+   "wildlife":"Late-season nectar, valuable when little else is in bloom.",
+   "safety":"No notable cautions."},
+  {"id":"yarrow","common":"Yarrow","irish":"Lus na Fola","botanical":"Achillea millefolium","type":"herb","position":{"x_ft":2,"row":"rail"},"seasons":["summer","autumn"],
+   "harvest":[{"m":[6,7,8],"do":"Flower & leaf → tea, oil, salve"}],
+   "medicinal":"The classic wound herb — styptic (it helps staunch bleeding), anti-inflammatory, and diaphoretic, meaning a hot infusion encourages a sweat that can help break a fever.",
+   "preparing":"I press a fresh leaf to a small cut, brew the dried flower-and-leaf as a fever tea, or infuse it into oil for a salve.",
+   "care":"I give it full sun and sharp drainage; once established it's drought-tolerant — an easy, undemanding pot plant that flowers for a long season.",
+   "story":"Its Irish name, lus na fola, means 'herb of the blood', and old lore held yarrow the best of all herbs for cures — even sewn into clothing to keep illness away. Its botanical name honours Achilles, said to have carried it to staunch his soldiers' wounds.",
+   "wildlife":"Excellent for bees, butterflies, and hoverflies.",
+   "safety":"Best avoided in pregnancy; some people sensitive to the daisy family may react."},
+  {"id":"calendula","common":"Calendula (Pot Marigold)","irish":null,"botanical":"Calendula officinalis","type":"flower","position":{"x_ft":4.2,"row":"rail"},"seasons":["spring","summer","autumn"],
+   "harvest":[{"m":[6,7,8,9,10],"do":"Flowers → oil & salve"}],
+   "medicinal":"The skin-healer of the herb garden — anti-inflammatory, gently antimicrobial, and soothing for minor cuts, chapping, and irritation. The foundation of a good home salve.",
+   "preparing":"I dry the petals and flowers, then infuse them into oil for salve, balm, or a simple wash. It's easy from seed and generous all season.",
+   "care":"I give it full sun and ordinary potting soil — the more I pick, the more it flowers.",
+   "story":"A beloved cottage-garden and monastery-garden herb across Ireland and Britain, long grown by the door for the pot and the medicine chest alike. Its name marks it as the 'little clock' that opens its face with the sun.",
+   "wildlife":"Reliable nectar for bees and hoverflies over a long season.",
+   "safety":"Daisy-family; rare sensitivity in susceptible people."},
+  {"id":"chamomile","common":"Chamomile","irish":null,"botanical":"Chamaemelum nobile","type":"flower","position":{"x_ft":6.5,"row":"rail"},"seasons":["summer"],
+   "harvest":[{"m":[6,7,8],"do":"Flowers → tea & wash"}],
+   "medicinal":"The great calming and settling herb — soothing to the nerves and to the stomach, gentle enough for a bedtime tea, and, as a cooled infusion, a mild wash for irritated skin or tired eyes.",
+   "preparing":"I infuse the dried flowers as a tea; cooled and strained, the same infusion serves as a skin or eye wash.",
+   "care":"I give it full sun and light, free-draining soil. Roman chamomile makes a low, apple-scented mat for the front of a pot; German chamomile is a taller annual I grow from seed.",
+   "story":"An ancient herb of calm across Ireland and Britain — Celtic lore held that a cup of its tea gave 'the strength to persevere', and it joined mint and valerian in Lady Wilde's recorded May Day charm to call the bees to a hive. Gardeners knew it as 'the plant's physician', for ailing plants were said to revive when it grew near.",
+   "wildlife":"Open flowers for small bees and hoverflies.",
+   "safety":"Daisy family — rare sensitivity; avoid with a known ragweed or daisy allergy."},
+  {"id":"primrose","common":"Primrose","irish":"Sabhaircín","botanical":"Primula vulgaris","type":"flower","position":{"x_ft":8.7,"row":"rail"},"seasons":["spring"],
+   "harvest":[{"m":[3,4],"do":"Flowers & leaves → tea; edible"}],
+   "medicinal":"A gentle old remedy — the flowers and leaves for coughs, headaches, and as a mild calmative; the root is more strongly expectorant. Soft in action, and among the first medicine of the year.",
+   "preparing":"I infuse the flowers or leaves as a mild tea. The flowers are edible too — lovely scattered on a salad or set into a cordial.",
+   "care":"I keep it in part shade in cool, moist soil — a woodland-edge plant, ideal for a shadier pot. Low and early, it pairs beautifully with my wild garlic.",
+   "story":"The primrose — sabhaircín — is a fairy flower of May Eve, strewn on the doorstep and window-sills to bless the home and keep the good folk kindly; where it grew, the sídhe were near. Its oil, with vervain, was named in the old tales among ingredients to bless a bard.",
+   "wildlife":"Among the very first nectar of spring, for early bees and brimstone butterflies.",
+   "safety":"Gentle; a few people find the leaves irritating to handle."},
+  {"id":"comfrey","common":"Comfrey","irish":"Lus na gCnámh Briste","botanical":"Symphytum officinale","type":"herb","position":{"x_ft":10.9,"row":"rail"},"seasons":["spring","summer","autumn"],
+   "harvest":[{"m":[5,6,7,8,9],"do":"Leaf → salve & poultice (topical)"}],
+   "medicinal":"'Knitbone' — the classic topical remedy for bruises, sprains, and slow-healing skin, rich in allantoin, which supports tissue repair.",
+   "preparing":"Topical only, for me. I infuse the leaf into oil for a salve, or make a poultice for bruises and sprains — modern guidance is not to take comfrey internally.",
+   "care":"I give it part sun and a large pot of its own — it's vigorous and generous, and its cut leaves feed my compost and other plants.",
+   "story":"Its Irish name, lus na gcnámh briste — 'herb of the broken bones' — records precisely what generations used it for: binding sprains and helping mend.",
+   "wildlife":"Bell flowers much loved by bumblebees.",
+   "safety":"External use only. Do not ingest, and keep it off broken skin and deep or dirty wounds."},
+  {"id":"st-johns-wort","common":"St John's Wort","irish":"Lus Cholm Cille","botanical":"Hypericum perforatum","type":"herb","position":{"x_ft":13.2,"row":"rail"},"seasons":["summer"],
+   "harvest":[{"m":[6,7],"do":"Flowering tops → red infused oil"}],
+   "medicinal":"The golden midsummer flowers infuse into a deep-red oil prized for soothing minor burns, sore muscles, and nerve-related aches. Internally it carries a long and modern reputation for lifting low mood.",
+   "preparing":"I steep the fresh flowering tops in oil on a sunny sill until it turns red, for a topical oil or salve. I leave internal use to a professional's guidance.",
+   "care":"I give it full sun; it tolerates poor, dry soil and is easy in a pot.",
+   "story":"Gathered at midsummer, this was the plant of light against darkness, hung in the home for protection around St John's Eve. One Irish name, lus Cholm Cille, links it to St Colmcille, said to have carried it for comfort.",
+   "wildlife":"Flowers for pollinators.",
+   "safety":"Important: St John's Wort interacts with many medications — including antidepressants, the contraceptive pill, and others — and increases sensitivity to sunlight. Do not take it internally without checking with a pharmacist or doctor."},
+  {"id":"water-mint","common":"Water-mint","irish":"Cartlainn","botanical":"Mentha aquatica","type":"herb","position":{"x_ft":16,"row":"rail"},"seasons":["summer","autumn"],
+   "harvest":[{"m":[6,7,8,9],"do":"Leaf → digestive tea"}],
+   "medicinal":"Aromatic and digestive like its mint cousins — a warming carminative for the stomach, and traditionally taken for colds and coughs. Its Gaelic name traces to a word meaning 'to cleanse'.",
+   "preparing":"I infuse the fresh or dried leaf as a digestive tea.",
+   "care":"This is the one that most wants its feet wet, so I stand its pot in a saucer of water. I keep it contained, as all mints spread.",
+   "story":"The third of the three herbs the Druids held most sacred, beside meadowsweet and vervain. Its Gaelic names — cartlainn and its kin — come from cartam, 'to cleanse', and it was long used to cleanse the body and the water it grew beside.",
+   "wildlife":"Late flowers much loved by bees and butterflies.",
+   "safety":"Generally gentle; avoid large medicinal doses in pregnancy."},
+  {"id":"wild-garlic","common":"Wild Garlic (Ramsons)","irish":"Creamh","botanical":"Allium ursinum","type":"herb","position":{"x_ft":2,"row":"mid"},"seasons":["spring"],
+   "harvest":[{"m":[3,4],"do":"Leaves → pesto & greens"},{"m":[4,5],"do":"Flowers → garnish"}],
+   "medicinal":"A spring food-medicine of the garlic family — supporting the heart and circulation, mildly antimicrobial, and eaten in quantity as a cleansing green after winter.",
+   "preparing":"I eat the fresh spring leaves in a pesto, soup, or butter — best used fresh, as the virtue fades on drying.",
+   "care":"This is my shade-lover — a cooler, shadier pot with moist soil. It appears in spring and dies back by summer, so I pair it with something that follows on.",
+   "story":"Creamh — the Irish word gathers garlic, leek, and their wild kin into one family of 'strong, strengthening plants'. It runs so deep in the land that it names places: creamh coille, 'wood garlic'. Each spring the woods of Ireland fill with its scent.",
+   "wildlife":"Early white star-flowers for the first pollinators.",
+   "safety":"Identify with care — never confuse the leaves with those of toxic look-alikes such as lily-of-the-valley or lords-and-ladies. The strong garlic scent of a crushed leaf is the test."},
+  {"id":"meadowsweet","common":"Meadowsweet","irish":"Airgead Luachra","botanical":"Filipendula ulmaria","type":"herb","position":{"x_ft":4.8,"row":"mid"},"seasons":["summer"],
+   "harvest":[{"m":[7,8],"do":"Flowering tops → tea"}],
+   "medicinal":"A gentle anti-inflammatory and pain-reliever for aches and feverish colds and — unusually among salicylate herbs — soothing to the stomach. It gave its old botanical name, Spiraea, to the word 'aspirin'.",
+   "preparing":"I infuse the dried flowering tops as a tea; the flowers also sweeten mead and cordials.",
+   "care":"I give it full sun to part shade and keep the soil reliably moist — it likes to stay damp, so I use a larger pot or stand it in a saucer of water in summer.",
+   "story":"Meadowsweet — airgead luachra, 'silver of the rushes' — is one of the three herbs held most sacred by the Druids, alongside vervain and water-mint. It was strewn on floors for its sweet, almond-like scent at festivals and is associated with Bealtaine.",
+   "wildlife":"Flowers for pollinators.",
+   "safety":"Contains salicylates — avoid if you are sensitive to aspirin."},
+  {"id":"vervain","common":"Vervain","irish":null,"botanical":"Verbena officinalis","type":"herb","position":{"x_ft":7.6,"row":"mid"},"seasons":["summer","autumn"],
+   "harvest":[{"m":[7,8,9],"do":"Flowering tops → tea & tincture"}],
+   "medicinal":"A classic nervine — calming to a tense, frayed nervous system and traditionally taken for stress, tension headaches, and low spirits, with a bitter edge that supports digestion.",
+   "preparing":"I infuse the dried flowering tops as a tea — it's markedly bitter, so I usually blend it — or take it as a tincture.",
+   "care":"I give it full sun and free-draining soil; it's tall, airy, and wiry, so its fine lilac spikes take up little room in a pot despite their height.",
+   "story":"Vervain is the Enchanter's Herb, named by Pliny among the plants most favoured by the Druids and laid on their altars as an offering — a herb of purification, protection, and blessing across the Celtic and classical worlds. With meadowsweet and water-mint, it completes the three the Druids held most sacred.",
+   "wildlife":"Small flowers for bees and hoverflies.",
+   "safety":"Best avoided in pregnancy."},
+  {"id":"valerian","common":"Valerian","irish":null,"botanical":"Valeriana officinalis","type":"herb","position":{"x_ft":10.4,"row":"mid"},"seasons":["summer","autumn"],
+   "harvest":[{"m":[6],"do":"Flowers → scent for the bees"},{"m":[9,10],"do":"Root → tincture & tea"}],
+   "medicinal":"One of the oldest calming herbs of Europe — the root is a gentle sedative and nervine, taken for restlessness, anxiousness, and to ease the way into sleep.",
+   "preparing":"The root is the medicine: I lift it in autumn from an established plant, clean and dry it, and take it as a tea or tincture. Its scent is famously strong and earthy — not to everyone's liking.",
+   "care":"I give it sun to part shade and moist, rich soil in a large, deep pot. It grows tall, with sweetly scented pale flower-heads — and the neighbourhood cats are drawn to it.",
+   "story":"An ancient herb of peace, prized for calm across the old European herbals and among the plants the Druids would have known. It joined mint and chamomile in Lady Wilde's recorded May Day charm to gather bees, and folk memory ties its root-scent to the Pied Piper's power over rats.",
+   "wildlife":"Sweetly scented flower-heads for bees and moths.",
+   "safety":"A sedative — do not combine with sedative medication or alcohol, avoid it before driving, and avoid it in pregnancy."},
+  {"id":"nettle","common":"Nettle","irish":"Neantóg","botanical":"Urtica dioica","type":"herb","position":{"x_ft":13.4,"row":"mid"},"seasons":["spring"],
+   "harvest":[{"m":[3,4],"do":"Young tops → soup & tea"},{"m":[9],"do":"Second-flush tops → tea"}],
+   "medicinal":"One of the great spring tonics — deeply nourishing and mineral-rich (iron, calcium), traditionally taken to 'clean the blood' after winter and valued for joint complaints.",
+   "preparing":"I cook or dry the young spring tops — cooking takes out the sting — for soup, or infuse the dried leaf as a mineral-rich tea. I harvest with gloves.",
+   "care":"I keep it in part sun in its own contained pot, as it spreads readily, and cut it back for a fresh flush.",
+   "story":"'Fire lights fire': the sting of the nettle was itself used against the burning pain of rheumatism. Nettle soup is an enduring Irish spring dish, eaten to carry the body from winter into the new season.",
+   "wildlife":"A host plant for the caterpillars of several butterflies, including the small tortoiseshell and peacock.",
+   "safety":"Wear gloves to harvest; always cook or dry before eating."},
+  {"id":"lemon-balm","common":"Lemon Balm","irish":null,"botanical":"Melissa officinalis","type":"herb","position":{"x_ft":16.6,"row":"mid"},"seasons":["spring","summer","autumn"],
+   "harvest":[{"m":[5,6,7,8,9],"do":"Leaf → calming tea"}],
+   "medicinal":"A gentle, gladdening nervine — calming for anxiousness and restlessness, settling to the stomach, and, used topically, valued against cold-sore outbreaks. An old herb for lifting the spirits.",
+   "preparing":"I infuse the fresh or dried leaf as a calming tea; a strong infusion also makes a soothing skin wash.",
+   "care":"I grow it in a pot in sun or part shade — easy and generous — cut it back to keep it fresh, and keep it contained, as it self-seeds.",
+   "story":"Its name Melissa is Greek for honeybee: for centuries it was grown beside the hives and rubbed on them to keep the bees content and draw a swarm home. It was long counted a herb of gladness — said to 'make the heart merry'.",
+   "wildlife":"A magnet for honeybees and bumblebees, as its name promises.",
+   "safety":"Gentle; those with a thyroid condition may wish to check with a professional before regular medicinal use."}
+];
+
+/* ======================= BOTANICAL ILLUSTRATIONS ======================= */
+const LINE='#83807f', SOFT='#a29f9f', FILL='#efeeee', FILL2='#f6f5f5', WHITE='#ffffff';
+function open(a=''){return `<g fill="none" stroke="${LINE}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${a}>`;}
+function dot(x,y,r=3,f=SOFT){return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${f}" stroke="none"/>`;}
+function ring(x,y,r=3,f=FILL){return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${f}" stroke="${LINE}" stroke-width="1.4"/>`;}
+function leaf(x,y,rot,len=26,wid=13,f=FILL2){return `<g transform="translate(${x},${y}) rotate(${rot})"><path d="M0 0 C ${wid} ${-len*0.32} ${wid} ${-len*0.78} 0 ${-len} C ${-wid} ${-len*0.78} ${-wid} ${-len*0.32} 0 0 Z" fill="${f}" stroke="${LINE}" stroke-width="1.6"/><path d="M0 -2 L 0 ${-len+3}" stroke="${LINE}" stroke-width="1.2" fill="none"/></g>`;}
+function toothLeaf(x,y,rot,len=30,wid=15,f=FILL2){const s=8,pts=[];for(let i=0;i<=s;i++){const t=i/s;const w=wid*Math.sin(Math.PI*t)*(i%2?0.72:1);pts.push(`${w.toFixed(1)} ${(-len*t).toFixed(1)}`);}for(let i=s;i>=0;i--){const t=i/s;const w=-wid*Math.sin(Math.PI*t)*(i%2?0.72:1);pts.push(`${w.toFixed(1)} ${(-len*t).toFixed(1)}`);}return `<g transform="translate(${x},${y}) rotate(${rot})"><polygon points="${pts.join(' ')}" fill="${f}" stroke="${LINE}" stroke-width="1.6"/><path d="M0 0 L 0 ${-len}" stroke="${LINE}" stroke-width="1.2" fill="none"/></g>`;}
+function heartLeaf(x,y,rot,sz=22,f=FILL2){return `<g transform="translate(${x},${y}) rotate(${rot})"><path d="M0 0 C ${sz*0.9} ${-sz*0.2} ${sz*0.7} ${-sz} 0 ${-sz*1.15} C ${-sz*0.7} ${-sz} ${-sz*0.9} ${-sz*0.2} 0 0 Z" fill="${f}" stroke="${LINE}" stroke-width="1.6"/><path d="M0 0 L 0 ${-sz}" stroke="${LINE}" stroke-width="1.1" fill="none"/></g>`;}
+function petalRing(cx,cy,rIn,rOut,n,w,pf,rot=0){let s='';for(let i=0;i<n;i++){const a=rot+(i/n)*360;const mid=-(rIn+(rOut-rIn)/2);s+=`<g transform="translate(${cx},${cy}) rotate(${a})"><ellipse cx="0" cy="${mid}" rx="${w}" ry="${((rOut-rIn)/2).toFixed(1)}" fill="${pf}" stroke="${LINE}" stroke-width="1.2"/></g>`;}return s;}
+function daisy(cx,cy,o={}){const{rIn=6,rOut=21,n=13,w=3.6,pf=WHITE,cr=6.5,cf=SOFT}=o;return petalRing(cx,cy,rIn,rOut,n,w,pf)+`<circle cx="${cx}" cy="${cy}" r="${cr}" fill="${cf}" stroke="${LINE}" stroke-width="1.5"/>`;}
+function flower5(cx,cy,r=9,pf=WHITE,w=3.6){return petalRing(cx,cy,1.5,r,5,w,pf)+dot(cx,cy,2.2,SOFT);}
+const SCAT=[[0,0],[.55,-.18],[-.55,-.12],[.28,-.55],[-.32,-.52],[.78,-.4],[-.78,-.36],[.05,-.82],[.5,-.86],[-.5,-.84],[.95,-.66],[-.95,-.62],[.24,-1.12],[-.28,-1.08],[.66,-1.2],[-.66,-1.16],[0,-1.4],[.4,-1.42],[-.4,-1.4]];
+function cluster(cx,cy,sx,sy,count,r=2.6,f=SOFT){let s='';for(let i=0;i<count;i++){const[ux,uy]=SCAT[i%SCAT.length];s+=dot(cx+ux*sx,cy+uy*sy,r,f);}return s;}
+function bell(cx,cy,sc=1,rot=0,f=FILL){return `<g transform="translate(${cx},${cy}) rotate(${rot}) scale(${sc})"><path d="M0 0 C -7 1 -8 9 -6 15 C -4 20 4 20 6 15 C 8 9 7 1 0 0 Z" fill="${f}" stroke="${LINE}" stroke-width="1.5"/></g>`;}
+function berryCluster(cx,cy,f=SOFT){let s=`<path d="M${cx} ${cy-14} L ${cx} ${cy-2}" stroke="${LINE}" stroke-width="1.4" fill="none"/>`;const pos=[[-9,2],[0,0],[9,3],[-5,11],[5,11],[0,20]];for(const[dx,dy]of pos){s+=`<path d="M${cx} ${cy} L ${cx+dx} ${cy+dy}" stroke="${LINE}" stroke-width="1" fill="none"/>`+ring(cx+dx,cy+dy,4.4,f);}return s;}
+function pinnate(cx,cy,rot,len=46,pairs=4){let s=`<g transform="translate(${cx},${cy}) rotate(${rot})"><path d="M0 0 L 0 ${-len}" stroke="${LINE}" stroke-width="1.6" fill="none"/>`;for(let i=1;i<=pairs;i++){const yy=-len*(i/(pairs+1));s+=`<ellipse cx="9" cy="${yy}" rx="7" ry="3.2" fill="${FILL2}" stroke="${LINE}" stroke-width="1.3"/><ellipse cx="-9" cy="${yy}" rx="7" ry="3.2" fill="${FILL2}" stroke="${LINE}" stroke-width="1.3"/>`;}s+=`<ellipse cx="0" cy="${-len-3}" rx="6" ry="3" fill="${FILL2}" stroke="${LINE}" stroke-width="1.3"/></g>`;return s;}
+function sprig(cx,base,h){let s=`<path d="M${cx} ${base} L ${cx} ${base-h}" stroke="${LINE}" stroke-width="1.8" fill="none"/>`;const n=Math.floor(h/9);for(let i=1;i<=n;i++){const yy=base-i*9;s+=dot(cx-4,yy,2.3,SOFT)+dot(cx+4,yy,2.3,SOFT);}return s;}
+function waterLines(cx,y,w){let s='';for(let i=0;i<3;i++){const yy=y+i*6;s+=`<path d="M${cx-w} ${yy} q ${w/3} -4 ${2*w/3} 0 q ${w/3} 4 ${2*w/3} 0" stroke="${SOFT}" stroke-width="1.5" fill="none"/>`;}return s;}
+function fern(x,y,rot,len){let s=`<g transform="translate(${x},${y}) rotate(${rot})"><path d="M0 0 L 0 ${-len}" stroke="${LINE}" stroke-width="1.3" fill="none"/>`;const n=Math.floor(len/5);for(let i=1;i<=n;i++){const yy=-len*(i/(n+1));s+=`<path d="M0 ${yy} l -6 -3 M0 ${yy} l 6 -3" stroke="${LINE}" stroke-width="1.1" fill="none"/>`;}return s+`</g>`;}
+function bee(cx,cy){return `<g><ellipse cx="${cx}" cy="${cy}" rx="6" ry="4" fill="${FILL}" stroke="${LINE}" stroke-width="1.3"/><path d="M${cx-2} ${cy-3.5} L ${cx-2} ${cy+3.5} M ${cx+1.5} ${cy-3.8} L ${cx+1.5} ${cy+3.8}" stroke="${LINE}" stroke-width="1.2"/><ellipse cx="${cx-4}" cy="${cy-5}" rx="4" ry="2.4" fill="${WHITE}" stroke="${LINE}" stroke-width="1" transform="rotate(-25 ${cx-4} ${cy-5})"/><ellipse cx="${cx+3}" cy="${cy-5}" rx="4" ry="2.4" fill="${WHITE}" stroke="${LINE}" stroke-width="1" transform="rotate(25 ${cx+3} ${cy-5})"/></g>`;}
+function svg(inner){return `<svg viewBox="0 0 180 140" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;}
+
+function illus(id){
+  switch(id){
+    case 'crab-apple-dolgo': return svg(open()+`<path d="M92 132 C 88 104 92 82 104 66 C 112 55 128 50 140 54"/>`+`</g>`+leaf(128,60,40,24,11)+ring(72,92,15,FILL)+`<path d="M72 77 q3 5 0 8" stroke="${LINE}" stroke-width="1.4" fill="none"/>`+ring(102,74,13,FILL)+`<path d="M102 61 q3 4 0 7" stroke="${LINE}" stroke-width="1.4" fill="none"/>`+flower5(120,48,11,WHITE,3));
+    case 'blackthorn': return svg(open('stroke-width="2.4"')+`<path d="M84 134 C 82 108 90 86 102 70 C 110 60 122 56 134 58"/><path d="M96 80 l -9 -3 M112 66 l 9 -4 M90 98 l -9 -2"/>`+`</g>`+flower5(70,72,9)+flower5(114,50,9)+flower5(130,66,8)+ring(80,98,6,SOFT)+ring(98,106,6,SOFT));
+    case 'hawthorn': return svg(open()+`<path d="M90 132 C 88 108 92 88 100 72"/><path d="M100 78 l -8 -5 M108 92 l 8 -5 M96 104 l -8 -4"/>`+`</g>`+leaf(120,86,55,20,12)+leaf(70,96,-40,20,12)+berryCluster(74,60,SOFT)+flower5(116,58,10,FILL,3));
+    case 'elder': return svg(open()+`<path d="M90 132 L 90 86"/><path d="M90 100 l -16 -8 M90 108 l 16 -8"/>`+`</g>`+leaf(64,96,-55,20,10)+leaf(118,96,55,20,10)+`<g>${[-34,-17,0,17,34].map(dx=>`<path d="M90 84 L ${90+dx} 54" stroke="${LINE}" stroke-width="1" fill="none"/>`).join('')}</g>`+cluster(90,54,34,22,17,2.4,SOFT));
+    case 'rowan': return svg(pinnate(66,128,-6,60,5)+berryCluster(118,66,SOFT)+`<path d="M118 92 C 112 108 104 118 96 128" stroke="${LINE}" stroke-width="1.6" fill="none"/>`);
+    case 'foxglove': return svg(open()+`<path d="M78 134 L 92 40"/>`+`</g>`+leaf(70,128,-18,26,12)+leaf(86,132,10,22,11)+bell(96,58,1.15,28)+bell(99,74,1.05,24)+bell(101,90,0.95,20)+bell(102,106,0.85,16)+bell(103,120,0.7,12));
+    case 'heather': return svg(open()+`<path d="M72 132 L 70 96 M90 132 L 90 92 M108 132 L 110 98"/>`+`</g>`+sprig(70,132,40)+sprig(90,132,44)+sprig(110,132,38));
+    case 'yarrow': return svg(open()+`<path d="M84 132 L 88 70"/>`+`</g>`+fern(64,128,22,40)+cluster(88,66,30,12,16,2.4,SOFT));
+    case 'meadowsweet': return svg(open()+`<path d="M86 134 L 90 66"/>`+`</g>`+leaf(70,120,-30,22,11)+leaf(104,116,32,22,11)+cluster(90,58,26,34,19,2.2,SOFT));
+    case 'vervain': return svg(open()+`<path d="M84 134 L 86 78 M86 92 L 66 58 M86 96 L 108 60 M86 84 L 92 50"/>`+`</g>`+leaf(70,128,-24,20,10)+leaf(100,128,24,20,10)+cluster(66,54,10,14,7,1.9,SOFT)+cluster(108,56,10,14,7,1.9,SOFT)+cluster(92,46,9,14,7,1.9,SOFT));
+    case 'valerian': return svg(open()+`<path d="M86 134 L 90 60"/>`+`</g>`+fern(72,122,20,34)+fern(108,124,-20,34)+cluster(90,54,15,10,16,2,SOFT));
+    case 'st-johns-wort': return svg(open()+`<path d="M82 134 L 86 62 M86 92 l 16 -6 M86 104 l -16 -6"/>`+`</g>`+`<ellipse cx="104" cy="84" rx="8" ry="3" fill="${FILL2}" stroke="${LINE}" stroke-width="1.3"/><ellipse cx="68" cy="96" rx="8" ry="3" fill="${FILL2}" stroke="${LINE}" stroke-width="1.3"/>`+flower5(86,58,11,SOFT)+flower5(108,66,8,SOFT)+flower5(64,68,8,SOFT));
+    case 'nettle': return svg(open()+`<path d="M90 134 L 90 52"/>`+`</g>`+toothLeaf(90,112,-52,30,15)+toothLeaf(90,112,52,30,15)+toothLeaf(90,84,-58,26,13)+toothLeaf(90,84,58,26,13)+`<g>${[-6,0,6].map(dx=>dot(90+dx,64,1.8,SOFT)).join('')}</g>`);
+    case 'calendula': return svg(open()+`<path d="M88 134 L 90 74"/>`+`</g>`+leaf(72,120,-28,22,9)+leaf(108,124,28,22,9)+daisy(96,52,{rOut:24,rIn:7,n:18,w:3.4,pf:FILL,cf:SOFT,cr:8})+`<path d="M64 96 q -6 -10 2 -16 q 8 6 2 16 z" fill="${FILL2}" stroke="${LINE}" stroke-width="1.5"/>`);
+    case 'chamomile': return svg(open()+`<path d="M86 134 L 90 72 M90 96 l -14 6 M90 108 l 14 4"/>`+`</g>`+fern(74,104,-30,20)+fern(104,112,30,20)+daisy(94,54,{rOut:22,rIn:6,n:12,w:3.4,pf:WHITE,cf:SOFT,cr:7})+`<circle cx="66" cy="74" r="4.5" fill="${FILL}" stroke="${LINE}" stroke-width="1.4"/>`);
+    case 'primrose': return svg(leaf(74,130,-26,26,15)+leaf(106,130,26,26,15)+leaf(90,134,0,28,15)+open()+`<path d="M90 120 L 82 84 M90 120 L 100 88 M90 120 L 90 78"/>`+`</g>`+flower5(82,80,10,WHITE,4.2)+flower5(100,84,10,WHITE,4.2)+flower5(90,74,11,WHITE,4.4));
+    case 'comfrey': return svg(open()+`<path d="M70 134 C 74 96 92 74 116 66"/>`+`</g>`+`<path d="M56 128 C 40 108 44 84 66 76 C 78 96 74 120 66 132 Z" fill="${FILL2}" stroke="${LINE}" stroke-width="1.6"/><path d="M60 126 C 58 108 60 92 66 80" stroke="${LINE}" stroke-width="1.1" fill="none"/>`+bell(112,64,0.9,120)+bell(120,74,0.85,120)+bell(126,86,0.8,120));
+    case 'lemon-balm': return svg(open()+`<path d="M90 134 L 90 58"/>`+`</g>`+heartLeaf(90,118,-52,20)+heartLeaf(90,118,52,20)+heartLeaf(90,92,-56,18)+heartLeaf(90,92,56,18)+`<g>${[-5,0,5].map(dx=>dot(90+dx,70,1.7,SOFT)).join('')}</g>`+bee(120,52));
+    case 'water-mint': return svg(open()+`<path d="M88 118 L 90 60"/>`+`</g>`+waterLines(90,126,34)+leaf(90,104,-58,20,11)+leaf(90,104,58,20,11)+leaf(90,84,-62,17,9)+leaf(90,84,62,17,9)+`<circle cx="90" cy="52" r="12" fill="none" stroke="${LINE}" stroke-width="1.4"/>`+cluster(90,52,11,11,13,2,SOFT));
+    case 'wild-garlic': return svg(`<path d="M60 134 C 44 104 48 72 68 56" fill="${FILL2}" stroke="${LINE}" stroke-width="1.7"/><path d="M118 134 C 134 100 128 70 108 56" fill="${FILL2}" stroke="${LINE}" stroke-width="1.7"/>`+open()+`<path d="M90 132 L 90 60"/>`+`</g>`+`<g>${[-40,-15,10,35,60,85].map(a=>`<path d="M90 58 L ${(90+22*Math.cos(a*Math.PI/180)).toFixed(1)} ${(58+22*Math.sin(a*Math.PI/180)).toFixed(1)}" stroke="${LINE}" stroke-width="1" fill="none"/>`).join('')}</g>`+[[68,50],[112,52],[90,36],[74,66],[106,68]].map(([x,y])=>flower5(x,y,6,WHITE,2.4)).join(''));
+    default: return svg(`<circle cx="90" cy="70" r="22" fill="${FILL}" stroke="${LINE}" stroke-width="2"/>`);
+  }
+}
+
+/* ============================ PLAN RENDER ============================ */
+const SVG_NS="http://www.w3.org/2000/svg";
+const deck=document.getElementById('deck');
+const PX=50, OX=60, OY=70, DECK_W=20*PX, DECK_H=5*PX;
+const ROW_Y={wall:OY+52, mid:OY+DECK_H/2+6, rail:OY+DECK_H-34};
+const R_BY_TYPE={tree:21,shrub:18,herb:14,flower:14};
+function elm(n,a){const e=document.createElementNS(SVG_NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function drawScaffold(){
+  deck.appendChild(elm('rect',{x:OX,y:OY,width:DECK_W,height:DECK_H,rx:3,class:'deck-floor'}));
+  deck.appendChild(elm('line',{x1:OX,y1:OY,x2:OX+DECK_W,y2:OY,class:'wall'}));
+  const railY=OY+DECK_H;
+  deck.appendChild(elm('line',{x1:OX,y1:railY,x2:OX+DECK_W,y2:railY,class:'rail'}));
+  for(let x=OX;x<=OX+DECK_W;x+=25) deck.appendChild(elm('line',{x1:x,y1:railY,x2:x,y2:railY+9,class:'baluster'}));
+  let wl=elm('text',{x:OX,y:OY-14,class:'edge-label'});wl.textContent='Building wall';deck.appendChild(wl);
+  let rl=elm('text',{x:OX,y:railY+30,class:'edge-label'});rl.textContent='Railing · the view';deck.appendChild(rl);
+  for(let ft=0;ft<=20;ft+=2){const x=OX+ft*PX;deck.appendChild(elm('line',{x1:x,y1:railY+14,x2:x,y2:railY+20,class:'tick'}));const t=elm('text',{x:x,y:railY+34,class:'tick-label','text-anchor':'middle'});t.textContent=ft===20?'20 ft':ft;deck.appendChild(t);}
+}
+const markerEls={};
+function shortName(n){return n.replace(/\s*\(.*?\)\s*/g,'').replace(/'Dolgo'/,'Dolgo').trim();}
+function drawMarkers(){
+  PLANTS.forEach((p,i)=>{
+    const cx=OX+p.position.x_ft*PX, cy=ROW_Y[p.position.row], r=R_BY_TYPE[p.type]||14;
+    const g=elm('g',{class:'marker',tabindex:'0',role:'button','aria-label':p.common+' — open details'});
+    const inner=elm('g',{class:'marker-inner'});inner.style.animationDelay=(i*32)+'ms';
+    inner.appendChild(elm('circle',{class:'disc',cx:cx,cy:cy,r:r}));
+    const ini=elm('text',{class:'m-initial',x:cx,y:cy});ini.textContent=p.common[0];inner.appendChild(ini);
+    const lbl=elm('text',{class:'m-label',x:cx,y:cy+r+15});lbl.textContent=shortName(p.common);inner.appendChild(lbl);
+    g.appendChild(inner);
+    g.addEventListener('click',()=>openPanel(p.id));
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPanel(p.id);}});
+    deck.appendChild(g);markerEls[p.id]=g;
+  });
+}
+function applySeason(season){
+  document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(c.dataset.season===season)));
+  PLANTS.forEach(p=>{const active=season==='all'||p.seasons.includes(season);markerEls[p.id].classList.toggle('dimmed',!active);});
+}
+
+/* ============================ CALENDAR ============================ */
+const MON=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function rangeLabel(m){const a=[...m].sort((x,y)=>x-y);const parts=[];let s=a[0],p=a[0];for(let i=1;i<a.length;i++){if(a[i]===p+1){p=a[i];}else{parts.push(s===p?MON[s]:MON[s]+'–'+MON[p]);s=p=a[i];}}parts.push(s===p?MON[s]:MON[s]+'–'+MON[p]);return parts.join(', ');}
+function joinList(a){return a.length<=1?(a[0]||''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];}
+let calBuilt=false, selectedMonth=null;
+function monthItems(mo){
+  const active=PLANTS.filter(p=>!p.noHarvest&&p.harvest.some(h=>h.m.includes(mo)));
+  return active.map(p=>{const h=p.harvest.find(x=>x.m.includes(mo));return `${shortName(p.common).toLowerCase()} (${h.do.toLowerCase()})`;});
+}
+function selectMonth(mo){
+  selectedMonth=mo;
+  const now=new Date().getMonth()+1;
+  document.getElementById('calMonthLabel').textContent=(mo===now?'This month · ':'Selected · ')+MON[mo];
+  const items=monthItems(mo);
+  const lead=mo===now?'I could be gathering ':'In '+MON[mo]+' I could be gathering ';
+  document.getElementById('calNowText').innerHTML=items.length
+    ?(lead+joinList(items)+'.')
+    :(mo===now?'A quiet month for the harvest — a time to tend, to plan, and to let the garden rest.':'A quiet month in '+MON[mo]+' — a time to tend and to plan.');
+  document.querySelectorAll('#calTable .mhead').forEach(th=>{const m=+th.dataset.month;th.classList.toggle('sel',m===mo);th.setAttribute('aria-pressed',String(m===mo));});
+  document.querySelectorAll('#calTable td.cell').forEach(td=>td.classList.toggle('sel',+td.dataset.month===mo));
+}
+function renderCalendar(){
+  const now=new Date().getMonth()+1;
+  if(selectedMonth==null) selectedMonth=now;
+  let head='<tr><th class="rowname">Plant</th>'+MON.slice(1).map((mn,i)=>{const mo=i+1;return `<th class="mhead${mo===now?' is-now':''}" data-month="${mo}" role="button" tabindex="0" aria-pressed="false" title="Show ${MON[mo]}">${mn}</th>`;}).join('')+'</tr>';
+  let body='';
+  PLANTS.forEach(p=>{
+    let cells='';
+    for(let mo=1;mo<=12;mo++){
+      const hit=(p.harvest||[]).find(h=>h.m.includes(mo));
+      cells+=`<td class="cell${hit?' on':''}" data-month="${mo}" title="${hit?MON[mo]+': '+hit.do:''}"><span class="b"></span></td>`;
+    }
+    body+=`<tr data-id="${p.id}"><td class="rowname">${shortName(p.common)}</td>${cells}</tr>`;
+  });
+  const tbl=document.getElementById('calTable');
+  tbl.innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
+  tbl.querySelectorAll('tbody tr').forEach(tr=>tr.addEventListener('click',()=>openPanel(tr.dataset.id)));
+  tbl.querySelectorAll('.mhead').forEach(th=>{
+    th.addEventListener('click',()=>selectMonth(+th.dataset.month));
+    th.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();selectMonth(+th.dataset.month);}
+      else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=e.key==='ArrowRight'?(selectedMonth%12+1):((selectedMonth+10)%12+1);
+        selectMonth(n);const t=document.querySelector('#calTable .mhead[data-month="'+n+'"]');if(t)t.focus();
+      }
+    });
+  });
+  selectMonth(selectedMonth);
+  calBuilt=true;
+}
+
+/* ============================ DETAIL DRAWER ============================ */
+const panel=document.getElementById('panel'), scrim=document.getElementById('scrim');
+let selectedId=null,lastFocus=null;
+function fieldHTML(l,t,cls=''){return `<div class="field ${cls}"><h3>${l}</h3><p>${t}</p></div>`;}
+function seasonLabel(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function harvestText(p){
+  if(p.noHarvest) return 'Not harvested — grown for its lore and its pollinators only.';
+  return p.harvest.map(h=>`<b>${rangeLabel(h.m)}:</b> ${h.do}`).join('<br>');
+}
+function tryPhoto(id){
+  const exts=['jpg','jpeg','png','webp'];let i=0;const plate=document.getElementById('panelPlate');
+  (function attempt(){if(i>=exts.length)return;const im=new Image();im.onload=()=>{if(selectedId!==id)return;plate.innerHTML='';im.className='plate-photo';im.alt='';plate.appendChild(im);};im.onerror=()=>{i++;attempt();};im.src='images/'+id+'.'+exts[i];})();
+}
+function openPanel(id){
+  const p=PLANTS.find(x=>x.id===id);if(!p)return;
+  lastFocus=document.activeElement;
+  if(selectedId&&markerEls[selectedId])markerEls[selectedId].classList.remove('selected');
+  selectedId=id;if(markerEls[id])markerEls[id].classList.add('selected');
+  const plate=document.getElementById('panelPlate');plate.innerHTML=illus(id);tryPhoto(id);
+  document.getElementById('panelKicker').textContent=p.type.charAt(0).toUpperCase()+p.type.slice(1);
+  document.getElementById('panelTitle').textContent=p.common;
+  const ie=document.getElementById('panelIrish');ie.textContent=p.irish?('Gaeilge · '+p.irish):'';ie.style.display=p.irish?'block':'none';
+  document.getElementById('panelBot').textContent=p.botanical;
+  const tags=p.seasons.map(s=>`<span class="seasontag">${seasonLabel(s)}</span>`).join('');
+  const sc=p.toxic?'field safety toxic':'field safety';
+  document.getElementById('panelBody').innerHTML=
+    `<div class="seasontags">${tags}</div>`+
+    fieldHTML('Medicinal properties',p.medicinal)+
+    fieldHTML('How I prepare it',p.preparing)+
+    fieldHTML('Harvest &amp; make',harvestText(p),'harvest')+
+    fieldHTML('What it needs from me',p.care)+
+    fieldHTML('Ancestral story',p.story)+
+    fieldHTML('For the birds &amp; bees',p.wildlife)+
+    `<div class="${sc}"><h3>${p.toxic?'Do not ingest':'Safety'}</h3><p>${p.safety}</p></div>`;
+  document.getElementById('panelBody').scrollTop=0;
+  panel.classList.add('open');scrim.classList.add('open');panel.setAttribute('aria-hidden','false');
+  document.getElementById('panelClose').focus();
+}
+function closePanel(){
+  panel.classList.remove('open');scrim.classList.remove('open');panel.setAttribute('aria-hidden','true');
+  if(selectedId&&markerEls[selectedId])markerEls[selectedId].classList.remove('selected');
+  selectedId=null;if(lastFocus)lastFocus.focus();
+}
+document.getElementById('panelClose').addEventListener('click',closePanel);
+scrim.addEventListener('click',closePanel);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))closePanel();});
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>applySeason(c.dataset.season)));
+
+/* ============================ VIEW TOGGLE ============================ */
+document.querySelectorAll('.viewtab').forEach(b=>b.addEventListener('click',()=>{
+  const plan=b.dataset.view==='plan';
+  document.querySelectorAll('.viewtab').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  document.getElementById('planControls').hidden=!plan;
+  document.getElementById('planShell').hidden=!plan;
+  document.getElementById('planCaption').hidden=!plan;
+  document.getElementById('calWrap').hidden=plan;
+  if(!plan&&!calBuilt) renderCalendar();
+}));
+
+drawScaffold();drawMarkers();applySeason('all');
+</script>
+</body>
+</html>
